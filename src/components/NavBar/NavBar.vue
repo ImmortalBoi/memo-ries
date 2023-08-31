@@ -1,11 +1,38 @@
 <script setup>
+import { ref } from "vue";
 import { defineProps, defineEmits } from "vue";
 defineProps(["toggleHidden"]);
 defineEmits(["updateToggleHidden"]);
 
+import router from "../../router"
+import { store } from "../../store"
+
+let err = ref()
+async function signOut(){
+    const result = await store.signOut();
+    if (result.success) {
+        router.push('/login');
+    } else {
+        // handle error
+        err.value = result.error.code + result.error.message
+        console.error(result.error);
+    }
+}
+
+async function deleteAccount(){
+    const result = await store.deleteUser();
+    if (result.success) {
+        router.push('/signup');
+    } else {
+        // handle error
+        err.value = result.error.code + result.error.message
+        console.error(result.error);
+    }
+}
+
 function checkValid(routeName, buttonName) {
     if (routeName === buttonName) {
-        return "block text-3xl -mb-3  pr-4 pl-3 text-background bg-primary md:text-background md:p-0 ";
+        return "block text-3xl -mb-3  pr-4 pl-3 text-text md:text-background md:bg-primary md:text-background md:p-0 ";
     }
     return "block text-3xl -mb-3 pr-4 pl-3 text-text md:hover:text-background md:p-0";
 }
@@ -33,14 +60,20 @@ function checkIfLogin(routeName) {
                         class="self-center text-text text-4xl pl-3 -mb-2 font-semibold whitespace-nowrap ">Memo-ries</span>
                 </div>
                 <div class="flex md:order-2">
-                    <router-link to="/"
-                        class="hidden sm:block text-white bg-primary focus:ring-2 focus:outline-none focus:ring-background font-medium rounded-lg text-sm px-5 text-center md:mr-0 ml-8  ">
-                        <svg width="55" height="45" viewBox="0 0 103 89" fill="none" xmlns="http://www.w3.org/2000/svg">
-                            <path
-                                d="M60 44C63.7888 44 67.4224 42.5777 70.1015 40.0459C72.7806 37.5142 74.2857 34.0804 74.2857 30.5C74.2857 26.9196 72.7806 23.4858 70.1015 20.9541C67.4224 18.4223 63.7888 17 60 17C56.2112 17 52.5776 18.4223 49.8985 20.9541C47.2194 23.4858 45.7143 26.9196 45.7143 30.5C45.7143 34.0804 47.2194 37.5142 49.8985 40.0459C52.5776 42.5777 56.2112 44 60 44ZM54.8996 49.0625C43.9062 49.0625 35 57.4789 35 67.8676C35 69.5973 36.4844 71 38.3147 71H81.6853C83.5156 71 85 69.5973 85 67.8676C85 57.4789 76.0938 49.0625 65.1004 49.0625H54.8996Z"
-                                fill="#E1EFE1" />
-                        </svg>
-                    </router-link>
+                    <div class="dropdown">
+                        <button
+                            class="hidden sm:block text-white bg-primary focus:ring-2 focus:outline-none focus:ring-background font-medium rounded-lg text-sm text-center md:mr-5 ml-8  ">
+                            <svg width="55" height="45" viewBox="0 0 103 89" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M60 44C63.7888 44 67.4224 42.5777 70.1015 40.0459C72.7806 37.5142 74.2857 34.0804 74.2857 30.5C74.2857 26.9196 72.7806 23.4858 70.1015 20.9541C67.4224 18.4223 63.7888 17 60 17C56.2112 17 52.5776 18.4223 49.8985 20.9541C47.2194 23.4858 45.7143 26.9196 45.7143 30.5C45.7143 34.0804 47.2194 37.5142 49.8985 40.0459C52.5776 42.5777 56.2112 44 60 44ZM54.8996 49.0625C43.9062 49.0625 35 57.4789 35 67.8676C35 69.5973 36.4844 71 38.3147 71H81.6853C83.5156 71 85 69.5973 85 67.8676C85 57.4789 76.0938 49.0625 65.1004 49.0625H54.8996Z" fill="#E1EFE1"/>
+                                <path d="M18.9911 48.3828C19.5491 48.8711 20.4554 48.8711 21.0134 48.3828L28.1563 42.1328C28.7143 41.6445 28.7143 40.8516 28.1563 40.3633C27.5982 39.875 26.692 39.875 26.1339 40.3633L20 45.7305L13.8661 40.3672C13.308 39.8789 12.4018 39.8789 11.8438 40.3672C11.2857 40.8555 11.2857 41.6484 11.8438 42.1367L18.9866 48.3867L18.9911 48.3828Z" fill="#E1EFE1"/>
+                            </svg>
+                        </button>
+                        <div class="dropdown-content rounded-lg">
+                            <button @click="signOut()"> Sign Out </button>
+                            <button class="bg-error" @click="deleteAccount()"> Delete Account </button>
+                        </div>
+                    </div>
+
                     <button @click="$emit('updateToggleHidden')"
                         class="inline-flex items-center p-2 text-sm text-text rounded-lg md:hidden hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-gray-200   ">
                         <span class="sr-only">Open main menu</span>
@@ -54,7 +87,7 @@ function checkIfLogin(routeName) {
                 </div>
                 <div :class="toggleHidden">
                     <ul
-                        class="text-text flex flex-col p-4 md:ml-2 mt-4 md:flex-row md:space-x-8 md:mt-0 md:text-sm md:font-medium md:border-0">
+                        class="text-text md:bg-primary bg-background mb-1 pb-5 pt-3 rounded-xl flex flex-col md:p-4 md:ml-2 mt-4 md:flex-row md:space-x-8 md:mt-0 md:text-sm md:font-medium md:border-0">
                         <li>
                             <router-link to="/about" :class="checkValid($route.name, 'about')">
                                 About</router-link>
@@ -71,20 +104,50 @@ function checkIfLogin(routeName) {
                             <router-link to="/" :class="checkValid($route.name, 'bookmark')">
                                 Bookmarks</router-link>
                         </li>
-                        <li>
-                            <router-link to="/"
-                                class="text-text text-3xl flex-row md:hidden block py-2 pr-4 pl-2.5 rounded md:hover:bg-transparent md:hover:text-primary md:p-0 ">
-                                <svg width="20" height="22" viewBox="0 0 50 55" fill="none"
-                                    xmlns="http://www.w3.org/2000/svg">
-                                    <path
-                                        d="M25 27C28.7888 27 32.4224 25.5777 35.1015 23.0459C37.7806 20.5142 39.2857 17.0804 39.2857 13.5C39.2857 9.91958 37.7806 6.4858 35.1015 3.95406C32.4224 1.42232 28.7888 0 25 0C21.2112 0 17.5776 1.42232 14.8985 3.95406C12.2194 6.4858 10.7143 9.91958 10.7143 13.5C10.7143 17.0804 12.2194 20.5142 14.8985 23.0459C17.5776 25.5777 21.2112 27 25 27ZM19.8996 32.0625C8.90625 32.0625 0 40.4789 0 50.8676C0 52.5973 1.48438 54 3.31473 54H46.6853C48.5156 54 50 52.5973 50 50.8676C50 40.4789 41.0938 32.0625 30.1004 32.0625H19.8996Z"
-                                        fill="#0E0911" />
-                                </svg>
-                            </router-link>
-                        </li>
+                        <!-- <li>
+                            
+                        </li> -->
                     </ul>
                 </div>
             </div>
         </nav>
     </div>
 </template>
+
+<style>
+.dropbtn {
+    background-color: #04AA6D;
+    color: white;
+    padding: 16px;
+    font-size: 16px;
+    border: none;
+}
+
+.dropdown {
+    position: relative;
+    display: inline-block;
+}
+
+.dropdown-content {
+    display: none;
+    position: absolute;
+    background-color: #f1f1f1;
+    min-width: 160px;
+    box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+    z-index: 1;
+}
+
+.dropdown-content button {
+    color: black;
+    padding: 12px 16px;
+    text-decoration: none;
+    display: block;
+    font-size:x-large;
+}
+
+.dropdown-content a:hover {background-color: #ddd;}
+
+.dropdown:hover .dropdown-content {display: block;}
+
+.dropdown:hover .dropbtn {background-color: #3e8e41;}
+</style>

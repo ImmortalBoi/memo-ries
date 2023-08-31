@@ -16,7 +16,7 @@ async function signIn() {
         router.push('/');
     } else {
         // handle error
-        err.value = result.error.code + result.error.message
+        err.value = result.error
         console.log(result.error);
     }
 }

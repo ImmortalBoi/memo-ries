@@ -3,7 +3,7 @@ import { reactive } from 'vue'
 import { auth } from './firebase'
 import { db } from './firebase'
 
-import { signInWithEmailAndPassword, createUserWithEmailAndPassword } from "firebase/auth";
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, deleteUser} from "firebase/auth";
 import { set, ref as dbRef } from "firebase/database";
 
 export const store = reactive({
@@ -45,6 +45,30 @@ export const store = reactive({
           return { success: false, error: error.code + error.message };
         });
     }
+    return result;
+  },
+
+  signOut: async function(){
+    let result = await signOut(auth).then(() => {
+      console.log("completed");
+      return { success: true };
+    }).catch((error) => {
+      console.error(error);
+      return { success: false, error: error.code + error.message };
+    });
+
+    return result;
+  },
+
+  deleteUser: async function(){
+    let result = await deleteUser(this.user).then(() => {
+      console.log("completed");
+      return { success: true };
+    }).catch((error) => {
+      console.error(error);
+      return { success: false, error: error.code + error.message };
+    });
+    
     return result;
   }
 });
