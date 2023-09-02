@@ -11,6 +11,7 @@ import MemoryEditView from '@/views/Memory/MemoryEditView.vue'
 import NewMemoryView from '@/views/Memory/NewMemoryView.vue'
 import MemoryView from '@/views/Memory/MemoryView.vue'
 
+import BookmarksView from '../views/BookmarksView.vue'
 import AboutView from '../views/AboutView.vue'
 import LogInView from '../views/LogInView.vue'
 import SignUpView from '../views/SignUpView.vue'
@@ -68,6 +69,12 @@ const routes = [
     path: '/about',
     name: 'about',
     component: AboutView,
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/bookmarks',
+    name: 'bookmarks',
+    component: BookmarksView,
     meta: { requiresAuth: true }
   },
   {

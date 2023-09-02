@@ -101,7 +101,7 @@ function checkIfLogin(routeName) {
                                 Memories</router-link>
                         </li>
                         <li>
-                            <router-link to="/" :class="checkValid($route.name, 'bookmark')">
+                            <router-link to="/bookmarks" :class="checkValid($route.name, 'bookmarks')">
                                 Bookmarks</router-link>
                         </li>
                         <!-- <li>
